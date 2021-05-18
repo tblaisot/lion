@@ -15,6 +15,7 @@ export { DelegateMixin } from './src/DelegateMixin.js';
 export { DisabledMixin } from './src/DisabledMixin.js';
 export { DisabledWithTabIndexMixin } from './src/DisabledWithTabIndexMixin.js';
 export { SlotMixin } from './src/SlotMixin.js';
+export { SafeConnectedCallbackMixin } from './src/SafeConnectedCallbackMixin.js';
 export { UpdateStylesMixin } from './src/UpdateStylesMixin.js';
 export { browserDetection } from './src/browserDetection.js';
 export { EventTargetShim } from './src/EventTargetShim.js';

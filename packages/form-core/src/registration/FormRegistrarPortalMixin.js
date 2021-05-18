@@ -1,4 +1,4 @@
-import { dedupeMixin } from '@lion/core';
+import { dedupeMixin, SafeConnectedCallbackMixin } from '@lion/core';
 
 /**
  * @typedef {import('../../types/registration/FormRegistrarPortalMixinTypes').FormRegistrarPortalMixin} FormRegistrarPortalMixin
@@ -21,7 +21,7 @@ import { dedupeMixin } from '@lion/core';
  */
 const FormRegistrarPortalMixinImplementation = superclass =>
   // eslint-disable-next-line no-shadow, no-unused-vars
-  class extends superclass {
+  class extends SafeConnectedCallbackMixin(superclass) {
     constructor() {
       super();
 
@@ -47,15 +47,17 @@ const FormRegistrarPortalMixinImplementation = superclass =>
      */
     __redispatchEventForFormRegistrarPortalMixin(ev) {
       ev.stopPropagation();
-      if (!this.registrationTarget) {
-        throw new Error('A FormRegistrarPortal element requires a .registrationTarget');
-      }
-      this.registrationTarget.dispatchEvent(
-        new CustomEvent('form-element-register', {
-          detail: { element: ev.detail.element },
-          bubbles: true,
-        }),
-      );
+      this.whenSlotReady(() => {
+        if (!this.registrationTarget) {
+          throw new Error('A FormRegistrarPortal element requires a .registrationTarget');
+        }
+        this.registrationTarget.dispatchEvent(
+          new CustomEvent('form-element-register', {
+            detail: { element: ev.detail.element },
+            bubbles: true,
+          }),
+        );
+      });
     }
   };
 

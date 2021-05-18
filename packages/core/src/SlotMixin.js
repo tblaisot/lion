@@ -1,5 +1,6 @@
 /* eslint-disable class-methods-use-this */
 import { dedupeMixin } from '@open-wc/dedupe-mixin';
+import { SafeConnectedCallbackMixin } from './SafeConnectedCallbackMixin.js';
 
 /**
  * @typedef {import('../types/SlotMixinTypes').SlotMixin} SlotMixin
@@ -12,7 +13,7 @@ import { dedupeMixin } from '@open-wc/dedupe-mixin';
  */
 const SlotMixinImplementation = superclass =>
   // eslint-disable-next-line no-unused-vars, no-shadow
-  class extends superclass {
+  class extends SafeConnectedCallbackMixin(superclass) {
     /**
      * @return {SlotsMap}
      */
@@ -24,15 +25,12 @@ const SlotMixinImplementation = superclass =>
       super();
       /** @private */
       this.__privateSlots = new Set(null);
+      this.__isConnectedSlotMixin = false;
     }
 
-    connectedCallback() {
-      // @ts-ignore checking this in case we pass LitElement, found no good way to type this...
-      if (super.connectedCallback) {
-        // @ts-ignore checking this in case we pass LitElement, found no good way to type this...
-        super.connectedCallback();
-      }
+    safeConnectedCallback() {
       this._connectSlotMixin();
+      super.safeConnectedCallback();
     }
 
     /**

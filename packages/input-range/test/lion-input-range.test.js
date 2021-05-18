@@ -38,7 +38,9 @@ describe('<lion-input-range>', () => {
     `);
     const el = document.createElement('lion-input-range');
     wrapper.appendChild(el);
+    await Promise.resolve();
     wrapper2.appendChild(el);
+    await Promise.resolve();
 
     expect(el.children[1].tagName).to.not.equal('STYLE');
   });

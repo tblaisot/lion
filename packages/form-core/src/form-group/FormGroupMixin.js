@@ -525,10 +525,12 @@ const FormGroupMixinImplementation = superclass =>
       }
       this.__linkParentMessages(child);
       this.validate({ clearCurrentResult: true });
+      this.whenSlotReady(() => {
+        if (typeof child.addToAriaLabelledBy === 'function' && this._labelNode) {
+          child.addToAriaLabelledBy(this._labelNode, { reorder: false });
+        }
+      });
 
-      if (typeof child.addToAriaLabelledBy === 'function' && this._labelNode) {
-        child.addToAriaLabelledBy(this._labelNode, { reorder: false });
-      }
       if (!child.modelValue) {
         const pVals = this.__pendingValues;
         if (pVals.modelValue && pVals.modelValue[child.name]) {

@@ -1,15 +1,17 @@
-import { LitElement, html, css } from '@lion/core';
+import { css, html, LitElement, SafeConnectedCallbackMixin } from '@lion/core';
+
 /**
  * Generate random UUID
  */
 const uuid = () => Math.random().toString(36).substr(2, 10);
+
 /**
  * `LionCollapsible` is a class for custom collapsible element (`<lion-collapsible>` web component).
  *
  * @customElement lion-collapsible
  * @extends LitElement
  */
-export class LionCollapsible extends LitElement {
+export class LionCollapsible extends SafeConnectedCallbackMixin(LitElement) {
   static get styles() {
     return [
       css`
@@ -45,8 +47,8 @@ export class LionCollapsible extends LitElement {
     this.opened = false;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  safeConnectedCallback() {
+    super.safeConnectedCallback();
 
     const uid = uuid();
 
@@ -75,8 +77,8 @@ export class LionCollapsible extends LitElement {
     }
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  safeDisconnectedCallback() {
+    super.safeDisconnectedCallback();
     if (this._invokerNode) {
       this._invokerNode.removeEventListener('click', this.toggle);
     }

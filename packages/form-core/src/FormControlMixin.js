@@ -1,4 +1,12 @@
-import { css, dedupeMixin, html, nothing, SlotMixin, DisabledMixin } from '@lion/core';
+import {
+  css,
+  dedupeMixin,
+  html,
+  nothing,
+  SlotMixin,
+  DisabledMixin,
+  SafeConnectedCallbackMixin,
+} from '@lion/core';
 import { getAriaElementsInRightDomOrder } from './utils/getAriaElementsInRightDomOrder.js';
 import { Unparseable } from './validate/Unparseable.js';
 import { FormRegisteringMixin } from './registration/FormRegisteringMixin.js';
@@ -36,7 +44,9 @@ function uuid(prefix) {
  */
 const FormControlMixinImplementation = superclass =>
   // eslint-disable-next-line no-shadow, no-unused-vars
-  class FormControlMixin extends FormRegisteringMixin(DisabledMixin(SlotMixin(superclass))) {
+  class FormControlMixin extends FormRegisteringMixin(
+    DisabledMixin(SlotMixin(SafeConnectedCallbackMixin(superclass))),
+  ) {
     /** @type {any} */
     static get properties() {
       return {
@@ -253,8 +263,8 @@ const FormControlMixinImplementation = superclass =>
       this._onLabelClick = this._onLabelClick.bind(this);
     }
 
-    connectedCallback() {
-      super.connectedCallback();
+    safeConnectedCallback() {
+      super.safeConnectedCallback();
       this._enhanceLightDomClasses();
       this._enhanceLightDomA11y();
       this._triggerInitialModelValueChangedEvent();
@@ -780,6 +790,7 @@ const FormControlMixinImplementation = superclass =>
     addToAriaDescribedBy(element, { idPrefix = '', reorder = true } = {}) {
       // eslint-disable-next-line no-param-reassign
       element.id = element.id || `${idPrefix}-${this._inputId}`;
+      // console.error(new Error("||||||||||||||||||| "+ element.id))
       if (!this._ariaDescribedNodes.includes(element)) {
         this._ariaDescribedNodes = [...this._ariaDescribedNodes, element];
         // This value will be read when we need to reflect to attr

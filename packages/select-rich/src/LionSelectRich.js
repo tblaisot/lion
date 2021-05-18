@@ -1,8 +1,9 @@
-import { LionListbox } from '@lion/listbox';
-import { html, ScopedElementsMixin, SlotMixin, browserDetection } from '@lion/core';
-import { OverlayMixin, withDropdownConfig } from '@lion/overlays';
+import { browserDetection, html, ScopedElementsMixin, SlotMixin } from '@lion/core';
 
 import '@lion/core/differentKeyEventNamesShimIE';
+import { SyncUpdatableMixin } from '@lion/form-core';
+import { LionListbox } from '@lion/listbox';
+import { OverlayMixin, withDropdownConfig } from '@lion/overlays';
 import { LionSelectInvoker } from './LionSelectInvoker.js';
 
 /**
@@ -24,7 +25,9 @@ function detectInteractionMode() {
 /**
  * LionSelectRich: wraps the <lion-listbox> element
  */
-export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(LionListbox))) {
+export class LionSelectRich extends SyncUpdatableMixin(
+  SlotMixin(ScopedElementsMixin(OverlayMixin(LionListbox))),
+) {
   static get scopedElements() {
     return {
       ...super.scopedElements,
@@ -141,6 +144,11 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
 
   connectedCallback() {
     super.connectedCallback();
+    this.addEventListener('keyup', this.__onKeyUp);
+  }
+
+  safeConnectedCallback() {
+    super.safeConnectedCallback();
     this._invokerNode.selectedElement = this.formElements[
       /**  @type {number} */ (this.checkedIndex)
     ];
@@ -151,16 +159,22 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.__teardownInvokerNode();
     this.removeEventListener('keyup', this.__onKeyUp);
   }
 
+  safeDisconnectedCallback() {
+    super.safeDisconnectedCallback();
+    this.__teardownInvokerNode();
+  }
+
+  // FIXME RACE CONDITION
+  //  the order of the set properties change the behaviour
   /**
    * @param {string} name
    * @param {unknown} oldValue
    */
-  requestUpdateInternal(name, oldValue) {
-    super.requestUpdateInternal(name, oldValue);
+  updateSync(name, oldValue) {
+    super.updateSync(name, oldValue);
     if (name === 'interactionMode') {
       if (this.interactionMode === 'auto') {
         this.interactionMode = detectInteractionMode();
@@ -234,9 +248,10 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
       /* eslint-enable no-param-reassign */
       this.__hasInitialSelectedFormElement = true;
     }
-    this._alignInvokerWidth();
-
-    this._onFormElementsChanged();
+    this.whenSlotReady(() => {
+      this._alignInvokerWidth();
+      this._onFormElementsChanged();
+    });
   }
 
   /**
@@ -267,7 +282,9 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
   /** @protected */
   _onFormElementsChanged() {
     this.singleOption = this.formElements.length === 1;
-    this._invokerNode.singleOption = this.singleOption;
+    if (this._invokerNode) {
+      this._invokerNode.singleOption = this.singleOption;
+    }
   }
 
   /** @private */
@@ -329,8 +346,10 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
 
   /** @private */
   __teardownInvokerNode() {
-    this._invokerNode.removeEventListener('click', this.__invokerOnClick);
-    this._invokerNode.removeEventListener('blur', this.__invokerOnBlur);
+    if (this._invokerNode) {
+      this._invokerNode.removeEventListener('click', this.__invokerOnClick);
+      this._invokerNode.removeEventListener('blur', this.__invokerOnBlur);
+    }
   }
 
   /**
@@ -458,6 +477,10 @@ export class LionSelectRich extends SlotMixin(ScopedElementsMixin(OverlayMixin(L
    */
   get _overlayContentNode() {
     return this._listboxNode;
+  }
+
+  setCheckedIndex(index) {
+    super.setCheckedIndex(index);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { dedupeMixin } from '@lion/core';
+import { dedupeMixin, SafeConnectedCallbackMixin } from '@lion/core';
 
 const windowWithOptionalPolyfill = /** @type {Window & typeof globalThis & {applyFocusVisiblePolyfill?: function}} */ (window);
 const polyfilledNodes = new WeakMap();
@@ -19,7 +19,7 @@ function applyFocusVisiblePolyfillWhenNeeded(node) {
  * @param {import('@open-wc/dedupe-mixin').Constructor<import('@lion/core').LitElement>} superclass
  */
 const FocusMixinImplementation = superclass =>
-  class FocusMixin extends superclass {
+  class FocusMixin extends SafeConnectedCallbackMixin(superclass) {
     /** @type {any} */
     static get properties() {
       return {
@@ -49,6 +49,11 @@ const FocusMixinImplementation = superclass =>
 
     connectedCallback() {
       super.connectedCallback();
+      applyFocusVisiblePolyfillWhenNeeded(this.getRootNode());
+    }
+
+    safeConnectedCallback() {
+      super.safeConnectedCallback();
       this.__registerEventsForFocusMixin();
     }
 
@@ -80,6 +85,7 @@ const FocusMixinImplementation = superclass =>
     // @ts-ignore it's up to Subclassers to return the right element. This is needed for docs/types
     // eslint-disable-next-line class-methods-use-this, getter-return, no-empty-function
     get _focusableNode() {
+      console.error(new Error('for the stacktrace'));
       // TODO: [v1]: remove return of _inputNode (it's now here for backwards compatibility)
       // @ts-expect-error see above
       return /** @type {HTMLElement} */ (this._inputNode || document.createElement('input'));
@@ -114,8 +120,6 @@ const FocusMixinImplementation = superclass =>
      * @private
      */
     __registerEventsForFocusMixin() {
-      applyFocusVisiblePolyfillWhenNeeded(this.getRootNode());
-
       /**
        * focus
        * @param {Event} ev
@@ -163,22 +167,24 @@ const FocusMixinImplementation = superclass =>
      * @private
      */
     __teardownEventsForFocusMixin() {
-      this._focusableNode.removeEventListener(
-        'focus',
-        /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocus),
-      );
-      this._focusableNode.removeEventListener(
-        'blur',
-        /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchBlur),
-      );
-      this._focusableNode.removeEventListener(
-        'focusin',
-        /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocusin),
-      );
-      this._focusableNode.removeEventListener(
-        'focusout',
-        /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocusout),
-      );
+      if (this._focusableNode) {
+        this._focusableNode.removeEventListener(
+          'focus',
+          /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocus),
+        );
+        this._focusableNode.removeEventListener(
+          'blur',
+          /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchBlur),
+        );
+        this._focusableNode.removeEventListener(
+          'focusin',
+          /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocusin),
+        );
+        this._focusableNode.removeEventListener(
+          'focusout',
+          /** @type {EventListenerOrEventListenerObject} */ (this.__redispatchFocusout),
+        );
+      }
     }
   };
 

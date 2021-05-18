@@ -73,6 +73,10 @@ export class LionOption extends DisabledMixin(ChoiceInputMixin(FormRegisteringMi
     this.__registerEventListeners();
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
   /**
    * @param {string} name
    * @param {unknown} oldValue

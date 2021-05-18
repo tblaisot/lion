@@ -69,9 +69,9 @@ export class LionTextarea extends NativeTextFieldMixin(LionFieldWithTextArea) {
     this.placeholder = '';
   }
 
-  connectedCallback() {
+  safeConnectedCallback() {
     // eslint-disable-next-line wc/guard-super-call
-    super.connectedCallback();
+    super.safeConnectedCallback();
     this.__initializeAutoresize();
     this.__intersectionObserver = new IntersectionObserver(() => this.resizeTextarea());
     this.__intersectionObserver.observe(this);

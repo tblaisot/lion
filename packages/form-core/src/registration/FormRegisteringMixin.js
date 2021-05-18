@@ -1,4 +1,4 @@
-import { dedupeMixin } from '@lion/core';
+import { dedupeMixin, SafeConnectedCallbackMixin } from '@lion/core';
 
 /**
  * @typedef {import('@lion/core').LitElement} LitElement
@@ -18,7 +18,7 @@ import { dedupeMixin } from '@lion/core';
  * @param {import('@open-wc/dedupe-mixin').Constructor<LitElement>} superclass
  */
 const FormRegisteringMixinImplementation = superclass =>
-  class extends superclass {
+  class extends SafeConnectedCallbackMixin(superclass) {
     constructor() {
       super();
       /**

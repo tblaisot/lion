@@ -71,9 +71,9 @@ export class LionInputAmount extends LocalizeMixin(LionInput) {
     this.defaultValidators.push(new IsNumber());
   }
 
-  connectedCallback() {
+  safeConnectedCallback() {
     // eslint-disable-next-line wc/guard-super-call
-    super.connectedCallback();
+    super.safeConnectedCallback();
     this.type = 'text';
     this._inputNode.setAttribute('inputmode', 'decimal');
 

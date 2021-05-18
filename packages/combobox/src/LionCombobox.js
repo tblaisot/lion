@@ -1,4 +1,5 @@
 import { html, css, browserDetection } from '@lion/core';
+import { SyncUpdatableMixin } from '@lion/form-core';
 import { OverlayMixin, withDropdownConfig } from '@lion/overlays';
 import { LionListbox } from '@lion/listbox';
 
@@ -20,7 +21,7 @@ import { LionListbox } from '@lion/listbox';
  * LionCombobox: implements the wai-aria combobox design pattern and integrates it as a Lion
  * FormControl
  */
-export class LionCombobox extends OverlayMixin(LionListbox) {
+export class LionCombobox extends SyncUpdatableMixin(OverlayMixin(LionListbox)) {
   /** @type {any} */
   static get properties() {
     return {
@@ -299,8 +300,8 @@ export class LionCombobox extends OverlayMixin(LionListbox) {
     this._textboxOnKeydown = this._textboxOnKeydown.bind(this);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  safeConnectedCallback() {
+    super.safeConnectedCallback();
     if (this._selectionDisplayNode) {
       this._selectionDisplayNode.comboboxElement = this;
     }
@@ -310,8 +311,8 @@ export class LionCombobox extends OverlayMixin(LionListbox) {
    * @param {'disabled'|'modelValue'|'readOnly'|'focused'} name
    * @param {unknown} oldValue
    */
-  requestUpdateInternal(name, oldValue) {
-    super.requestUpdateInternal(name, oldValue);
+  updateSync(name, oldValue) {
+    super.updateSync(name, oldValue);
     if (name === 'disabled' || name === 'readOnly') {
       this.__setComboboxDisabledAndReadOnly();
     }
@@ -484,7 +485,6 @@ export class LionCombobox extends OverlayMixin(LionListbox) {
    */
   _listboxOnClick(ev) {
     super._listboxOnClick(ev);
-
     this._inputNode.focus();
     if (!this.multipleChoice) {
       this.activeIndex = -1;

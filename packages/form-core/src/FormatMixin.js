@@ -498,8 +498,8 @@ const FormatMixinImplementation = superclass =>
       });
     }
 
-    connectedCallback() {
-      super.connectedCallback();
+    safeConnectedCallback() {
+      super.safeConnectedCallback();
 
       // Connect the value found in <input> to the formatting/parsing/serializing loop as a
       // fallback mechanism. Assume the user uses the value property of the

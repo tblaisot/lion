@@ -1,3 +1,5 @@
+export { SyncUpdatableMixin } from './src/utils/SyncUpdatableMixin.js';
+
 export { FocusMixin } from './src/FocusMixin.js';
 export { FormatMixin } from './src/FormatMixin.js';
 export { FormControlMixin } from './src/FormControlMixin.js';
@@ -8,7 +10,6 @@ export { FormRegistrarMixin } from './src/registration/FormRegistrarMixin.js';
 export { FormRegistrarPortalMixin } from './src/registration/FormRegistrarPortalMixin.js';
 export { NativeTextFieldMixin } from './src/NativeTextFieldMixin.js';
 export { FormControlsCollection } from './src/registration/FormControlsCollection.js';
-
 // validate
 
 export { ValidateMixin } from './src/validate/ValidateMixin.js';

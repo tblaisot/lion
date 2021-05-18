@@ -82,8 +82,8 @@ export class LionSwitch extends ScopedElementsMixin(ChoiceInputMixin(LionField))
     this.__handleButtonSwitchCheckedChanged = this.__handleButtonSwitchCheckedChanged.bind(this);
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  safeConnectedCallback() {
+    super.safeConnectedCallback();
     if (this._inputNode) {
       this._inputNode.addEventListener('checked-changed', this.__handleButtonSwitchCheckedChanged);
     }

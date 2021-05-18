@@ -1,10 +1,11 @@
 import { defineCE, expect, fixture } from '@open-wc/testing';
+import { LitElement } from 'lit-element';
 import { SlotMixin } from '../src/SlotMixin.js';
 
 describe('SlotMixin', () => {
   it('inserts provided element into lightdom and sets slot', async () => {
     const tag = defineCE(
-      class extends SlotMixin(HTMLElement) {
+      class extends SlotMixin(LitElement) {
         get slots() {
           return {
             ...super.slots,
@@ -14,12 +15,13 @@ describe('SlotMixin', () => {
       },
     );
     const el = await fixture(`<${tag}></${tag}>`);
+    // console.log(el)
     expect(el.children[0].slot).to.equal('feedback');
   });
 
   it('does not override user provided slots', async () => {
     const tag = defineCE(
-      class extends SlotMixin(HTMLElement) {
+      class extends SlotMixin(LitElement) {
         get slots() {
           return {
             ...super.slots,
@@ -35,7 +37,7 @@ describe('SlotMixin', () => {
 
   it('supports complex dom trees as element', async () => {
     const tag = defineCE(
-      class extends SlotMixin(HTMLElement) {
+      class extends SlotMixin(LitElement) {
         constructor() {
           super();
           this.foo = 'bar';
@@ -67,7 +69,7 @@ describe('SlotMixin', () => {
   it('supports conditional slots', async () => {
     let renderSlot = true;
     const tag = defineCE(
-      class extends SlotMixin(HTMLElement) {
+      class extends SlotMixin(LitElement) {
         get slots() {
           return {
             ...super.slots,
@@ -92,7 +94,7 @@ describe('SlotMixin', () => {
 
   it("allows to check which slots have been created via this._isPrivateSlot('slotname')", async () => {
     let renderSlot = true;
-    class SlotPrivateText extends SlotMixin(HTMLElement) {
+    class SlotPrivateText extends SlotMixin(LitElement) {
       get slots() {
         return {
           ...super.slots,

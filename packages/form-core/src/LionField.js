@@ -37,12 +37,16 @@ export class LionField extends FormControlMixin(
   connectedCallback() {
     super.connectedCallback();
     this._onChange = this._onChange.bind(this);
-    this._inputNode.addEventListener('change', this._onChange);
     this.classList.add('form-field'); // eslint-disable-line
   }
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
+  safeConnectedCallback() {
+    super.safeConnectedCallback();
+    this._inputNode.addEventListener('change', this._onChange);
+  }
+
+  safeDisconnectedCallback() {
+    super.safeDisconnectedCallback();
     this._inputNode.removeEventListener('change', this._onChange);
   }
 

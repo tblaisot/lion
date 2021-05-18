@@ -1076,9 +1076,10 @@ export function runListboxMixinSuite(customConfig = {}) {
       });
 
       describe('Disabled Options', () => {
+        // FIXME fail because race condition when setting property from other one, interaction-mode="mac" force selectionFollowFocus at false
         it('does not skip disabled options but prevents checking them', async () => {
           const el = await fixture(html`
-            <${tag} opened autocomplete="inline" .selectionFollowsFocus="${false}">
+            <${tag} opened autocomplete="inline" interaction-mode="mac" .selectionFollowsFocus="${false}">
               <${optionTag} .choiceValue=${'Item 1'} checked>Item 1</${optionTag}>
               <${optionTag} .choiceValue=${'Item 2'} disabled>Item 2</${optionTag}>
               <${optionTag} .choiceValue=${'Item 3'}>Item 3</${optionTag}>
@@ -1092,7 +1093,6 @@ export function runListboxMixinSuite(customConfig = {}) {
 
           mimicKeyPress(_listboxNode, 'ArrowDown');
           expect(el.activeIndex).to.equal(1);
-
           expect(el.checkedIndex).to.equal(0);
           mimicKeyPress(_listboxNode, 'Enter');
           // Checked index stays where it was

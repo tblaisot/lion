@@ -45,12 +45,16 @@ import { LionOptions } from './LionOptions.js';
  * @param {HTMLElement} target the desired target in light dom
  */
 function moveDefaultSlottablesToTarget(source, target) {
-  Array.from(source.childNodes).forEach((/** @type {* & Element} */ c) => {
-    const isNamedSlottable = c.hasAttribute && c.hasAttribute('slot');
-    if (!isNamedSlottable) {
-      target.appendChild(c);
-    }
-  });
+  try {
+    Array.from(source.childNodes).forEach((/** @type {* & Element} */ c) => {
+      const isNamedSlottable = c.hasAttribute && c.hasAttribute('slot');
+      if (!isNamedSlottable) {
+        target.appendChild(c);
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function uuid() {
@@ -354,12 +358,12 @@ const ListboxMixinImplementation = superclass =>
       this.__preventScrollingWithArrowKeys = this.__preventScrollingWithArrowKeys.bind(this);
     }
 
-    connectedCallback() {
+    safeConnectedCallback() {
       if (this._listboxNode) {
         // if there is none yet, it will be supplied via 'get slots'
         this._listboxNode.registrationTarget = this;
       }
-      super.connectedCallback();
+      super.safeConnectedCallback();
       this._setupListboxNode();
       this.__setupEventListeners();
 
@@ -406,8 +410,8 @@ const ListboxMixinImplementation = superclass =>
       }
     }
 
-    disconnectedCallback() {
-      super.disconnectedCallback();
+    safeDisconnectedCallback() {
+      super.safeDisconnectedCallback();
 
       this._teardownListboxNode();
       this.__teardownEventListeners();
@@ -646,7 +650,6 @@ const ListboxMixinImplementation = superclass =>
           break;
         /* no default */
       }
-
       const keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
       if (keys.includes(key) && this.selectionFollowsFocus && !this.multipleChoice) {
         this.setCheckedIndex(this.activeIndex);

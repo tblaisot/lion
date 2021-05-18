@@ -22,7 +22,7 @@ export declare class SyncUpdatableHost {
    * @param {string} name
    * @param {*} oldValue
    */
-  protected updateSync(name: string, oldValue: any): void;
+  protected reupdateSync(name: string, oldValue: any): void;
   private __syncUpdatableInitialize(): void;
   private __SyncUpdatableNamespace: SyncUpdatableNamespace;
   private static __syncUpdatableHasChanged(name: string, newValue: any, oldValue: any): boolean;

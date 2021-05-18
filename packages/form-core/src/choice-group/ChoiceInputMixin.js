@@ -194,10 +194,14 @@ const ChoiceInputMixinImplementation = superclass =>
 
     connectedCallback() {
       super.connectedCallback();
+      this.addEventListener('user-input-changed', this._toggleChecked);
+    }
+
+    safeConnectedCallback() {
+      super.safeConnectedCallback();
       if (this._labelNode) {
         this._labelNode.addEventListener('click', this._preventDuplicateLabelClick);
       }
-      this.addEventListener('user-input-changed', this._toggleChecked);
     }
 
     disconnectedCallback() {

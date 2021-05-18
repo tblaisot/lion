@@ -119,8 +119,8 @@ const InteractionStateMixinImplementation = superclass =>
     /**
      * Register event handlers and validate prefilled inputs
      */
-    connectedCallback() {
-      super.connectedCallback();
+    safeConnectedCallback() {
+      super.safeConnectedCallback();
       this.addEventListener(this._leaveEvent, this._iStateOnLeave);
       this.addEventListener(this._valueChangedEvent, this._iStateOnValueChange);
       this.initInteractionState();
